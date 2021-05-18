@@ -273,11 +273,9 @@ func (c *Client) dial(addr net.Addr) (net.Conn, error) {
 }
 
 func (c *Client) getConn(ctx context.Context, addr net.Addr) (*conn, error) {
-	// Check if the context is expired.
-	select {
-	default:
-	case <-ctx.Done():
-		return nil, ctx.Err()
+	// Check if the context is done.
+	if err := ctx.Err(); err != nil {
+		return nil, err
 	}
 
 	cn, ok := c.getFreeConn(addr)
